@@ -59,3 +59,38 @@ pip install psycopg2-binary graphene-django python-dotenv
     'SCHEMA': 'chat.schema.schema'
   }
 ```
+
+### Railway Deployments
+
+1. Include a railway.json file in your root directory. The format given by Railway is:
+
+```py
+  {
+    "$schema": "https://railway.app/railway.schema.json",
+    "build": {
+        "builder": "NIXPACKS"
+    },
+    "deploy": {
+        "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn threejulietai.wsgi",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+    }
+  }
+```
+
+2. Railway db setup for postgres
+```py
+  DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ["PGDATABASE"],
+        'USER': os.environ["PGUSER"],
+        'PASSWORD': os.environ["PGPASSWORD"],
+        'HOST': os.environ["PGHOST"],
+        'PORT': os.environ["PGPORT"],
+        'URL': os.environ["DATABASE_URL"],
+    }
+  }
+```
+
+3. Add env variable to deployment. Setup postgres in project and reference direcly using rw's link service.
